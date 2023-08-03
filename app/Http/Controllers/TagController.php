@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTagRequest;
 use App\Http\Requests\UpdateTagRequest;
 use App\Models\Tag;
 use App\Http\Controllers\Controller;
+use http\Env\Response;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
@@ -27,7 +28,7 @@ class TagController extends Controller
         Tag::create([
             'name' => $request->name,
         ]);
-        return redirect('/tags');
+        return response()->json(['success' => "Tag Created Successfully"]);
     }
 
     public function show(Tag $tag)
@@ -46,13 +47,13 @@ class TagController extends Controller
         $tag->update([
             'name' => $request->name,
         ]);
-        return redirect('tags/');
+        return response()->json(['success' => "Tag Updated Successfully"]);
     }
 
     public function destroy(Tag $tag)
     {
         $tag->games()->detach();
         $tag->delete();
-        return redirect('tags/');
+        return response()->json(['success' => "Tag Deleted Successfully"]);
     }
 }

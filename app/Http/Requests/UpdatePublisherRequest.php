@@ -14,7 +14,7 @@ class UpdatePublisherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:5|max:40'
+            'name' => ['required', 'unique:publishers,name,'.$this->publisher->id, 'min:5' , 'max:40'],
         ];
     }
 }

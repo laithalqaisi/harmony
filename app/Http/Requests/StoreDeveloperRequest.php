@@ -14,7 +14,7 @@ class StoreDeveloperRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:5|max:40'
+            'name' => 'required|unique:developers|min:5|max:40'
         ];
     }
 }

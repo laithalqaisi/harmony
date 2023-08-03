@@ -5,6 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"/>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
         $(document).ready(function() {
             $('.multipleSelect').select2({placeholder: 'Select an Option'});
@@ -32,13 +33,11 @@
             <li><a href="{{ URL::to('games/create') }}">Create</a>
         </ul>
     </nav>
-    <h1>Edit a Game</h1>
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-            <p>{{$error}}</p>
-        @endforeach
-    @endif
-    <form action="/games/{{$game->id}}" method="POST" class="form-group">
+    <h1>Edit a Game (Game ID: {{$game->id}})</h1>
+    <div class="alert alert-success" style="display:none"></div>
+    <div class="alert alert-danger" style="display:none"></div>
+
+    <form id="gameUpdateForm" name="gameUpdateForm" class="form-group">
         @csrf
         @method('PATCH')
         <label for="nameInput">Name: </label>
@@ -76,13 +75,72 @@
             @endforeach
         </select>
         <br/><br/>
-        <input type="submit" name="submit" value="Update Game" class="btn btn-primary">
+        <input type="submit" id="updateSubmit" name="submit" value="Update Game" class="btn btn-primary">
     </form>
-    <form method="POST" action="/games/{{$game->id}}" class="form-group">
+
+    <form id="gameDeleteForm" name="gameDeleteForm" class="form-group">
         @csrf
         @method("DELETE")
-        <input type="submit" value="Delete Game" name="submit" class="btn btn-primary"/>
+        <input type="submit" id="deleteSubmit" value="Delete Game" name="submit" class="btn btn-primary"/>
     </form>
+
+    <script>
+        $(document).ready(function () {
+            $('#updateSubmit').click(function (e) {
+                e.preventDefault();
+                $(this).html('Sending request..');
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/games/{{$game->id}}',
+                    type: 'PATCH',
+                    dataType: 'json',
+                    data: $('#gameUpdateForm').serialize(),
+                    success: function (result) {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').html(result.success);
+                    },
+                    error: function (result) {
+                        $('.alert-success').hide();
+                        $('.alert-danger').html('');
+                        $('.alert-danger').show();
+                        $.each(result.responseJSON.errors, function (k, v){
+                            $('.alert-danger').append('<p>'+v+'</p>');
+                        })
+                    }
+                })
+            });
+            $('#deleteSubmit').click(function (e) {
+                e.preventDefault();
+                $(this).html('Sending request..');
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/games/{{$game->id}}',
+                    type: 'DELETE',
+                    dataType: 'json',
+                    success: function (result) {
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').html(result.success);
+                    },
+                    error: function () {
+                        $('.alert-success').hide();
+                        $('.alert-danger').html('');
+                        $('.alert-danger').show();
+                        $('.alert-danger').html('Game Not Found');
+                    }
+                })
+            });
+        });
+    </script>
 </div>
 </body>
 </html>

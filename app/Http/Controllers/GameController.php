@@ -39,7 +39,7 @@ class GameController extends Controller
         ])->id;
         Game::findOrFail($game_id)->developers()->attach($request->developers_id);
         Game::findOrFail($game_id)->tags()->attach($request->tags_id);
-        return redirect('/games');
+        return response()->json(['success' => "Game Created Successfully"]);
     }
 
     public function show(Game $game)
@@ -67,7 +67,7 @@ class GameController extends Controller
         ]);
         Game::findOrFail($game->id)->developers()->sync($request->developers_id);
         Game::findOrFail($game->id)->tags()->sync($request->tags_id);
-        return redirect('games/');
+        return response()->json(['success' => "Game Updated Successfully"]);
     }
 
     public function destroy(Game $game)
@@ -75,6 +75,6 @@ class GameController extends Controller
         $game->developers()->detach();
         $game->tags()->detach();
         $game->delete();
-        return redirect('games/');
+        return response()->json(['success' => "Game Deleted Successfully"]);
     }
 }

@@ -14,7 +14,7 @@ class UpdateTagRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:2|max:20'
+            'name' => ['required', 'unique:tags,name,'.$this->tag->id, 'min:2' , 'max:20'],
         ];
     }
 }

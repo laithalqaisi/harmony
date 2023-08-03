@@ -27,7 +27,7 @@ class PublisherController extends Controller
         Publisher::create([
             'name' => $request->name,
         ]);
-        return redirect('/publishers');
+        return response()->json(['success' => "Publisher Created Successfully"]);
     }
 
     public function show(Publisher $publisher)
@@ -46,12 +46,12 @@ class PublisherController extends Controller
         $publisher->update([
             'name' => $request->name,
         ]);
-        return redirect('publishers/');
+        return response()->json(['success' => "Publisher Updated Successfully"]);
     }
 
     public function destroy(Publisher $publisher)
     {
         $publisher->delete();
-        return redirect('publishers/');
+        return response()->json(['success' => "Publisher Deleted Successfully"]);
     }
 }

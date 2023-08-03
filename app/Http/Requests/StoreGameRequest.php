@@ -14,7 +14,7 @@ class StoreGameRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:3|max:50',
+            'name' => 'required|unique:games|min:3|max:50',
             'rating' => 'required|numeric|min:0|max:10',
             'release_date' => 'date',
             'publisher_id' => 'required',

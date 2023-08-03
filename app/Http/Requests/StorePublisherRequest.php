@@ -14,7 +14,7 @@ class StorePublisherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|min:5|max:40'
+            'name' => 'required|unique:publishers|min:5|max:40'
         ];
     }
 }

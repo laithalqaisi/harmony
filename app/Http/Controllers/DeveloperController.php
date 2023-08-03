@@ -27,7 +27,7 @@ class DeveloperController extends Controller
         Developer::create([
             'name' => $request->name,
         ]);
-        return redirect('/developers');
+        return response()->json(['success' => "Developer Created Successfully"]);
     }
 
     public function show(Developer $developer)
@@ -46,13 +46,13 @@ class DeveloperController extends Controller
         $developer->update([
             'name' => $request->name,
         ]);
-        return redirect('developers/');
+        return response()->json(['success' => "Developer Updated Successfully"]);
     }
 
     public function destroy(Developer $developer)
     {
         $developer->games()->detach();
         $developer->delete();
-        return redirect('developers/');
+        return response()->json(['success' => "Developer Deleted Successfully"]);
     }
 }

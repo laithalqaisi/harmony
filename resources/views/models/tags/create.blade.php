@@ -2,6 +2,8 @@
 <html>
 <head>
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 <div class="container">
@@ -12,19 +14,49 @@
         </ul>
     </nav>
     <h1>Create a Tag</h1>
-    @if($errors->any())
-        @foreach($errors->all() as $error)
-            <p>{{$error}}</p>
-        @endforeach
-    @endif
-    <form action="/tags" method="POST" class="form-group">
-        @csrf
+    <div class="alert alert-success" style="display:none"></div>
+    <div class="alert alert-danger" style="display:none"></div>
+
+    <form id='tagCreateForm' name='tagCreateForm' class="form-group">
         <label for="nameInput">Name: </label>
         <input type="text" id="nameInput" name="name" class="form-control"/>
         <br/>
-        <input type="submit" name="submit" value="Create Tag" class="btn btn-primary">
+        <input type="submit" id="submit" name="submit" value="Create Tag" class="btn btn-primary">
     </form>
 
+    <script>
+        $(document).ready(function () {
+            $('#submit').click(function (e) {
+                e.preventDefault();
+                $(this).html('Sending request..');
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: '/tags',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: $('#tagCreateForm').serialize(),
+                    success: function (result) {
+                        $('#tagCreateForm').trigger('reset');
+                        $('.alert-danger').hide();
+                        $('.alert-success').show();
+                        $('.alert-success').html(result.success);
+                    },
+                    error: function (result) {
+                        $('.alert-success').hide();
+                        $('.alert-danger').html('');
+                        $('.alert-danger').show();
+                        $.each(result.responseJSON.errors, function (k, v){
+                            $('.alert-danger').append('<p>'+v+'</p>');
+                        })
+                    }
+                })
+            });
+        });
+    </script>
 </div>
 </body>
 </html>
